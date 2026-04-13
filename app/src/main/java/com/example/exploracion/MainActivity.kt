@@ -5,10 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -26,7 +23,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            // Scaffold es el contenedor raíz para TopAppBar y FAB
             Scaffold(
                 topBar = { CenterAlignedTopAppBar(title = { Text("Laboratorio Completo") }) },
                 floatingActionButton = { FloatingActionButton(onClick = {}) { Icon(Icons.Default.Add, contentDescription = "Add") } }
@@ -39,8 +35,10 @@ class MainActivity : ComponentActivity() {
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     SeccionContenedores()
-                    Divider()
+                    HorizontalDivider()
                     SeccionControlesCompletos()
+                    HorizontalDivider()
+                    SeccionNavegacionYEntrada()
                 }
             }
         }
@@ -59,7 +57,6 @@ fun SeccionContenedores() {
 fun SeccionControlesCompletos() {
     Text("CONTROLES (Lista completa)", style = MaterialTheme.typography.headlineSmall)
 
-    // AlertDialog
     var showDialog by remember { mutableStateOf(false) }
     Button(onClick = { showDialog = true }) { Text("Abrir AlertDialog") }
     if (showDialog) {
@@ -80,7 +77,6 @@ fun SeccionControlesCompletos() {
     }
 
     Icon(Icons.Default.Star, contentDescription = "Icon")
-
     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
 
     var sliderValue by remember { mutableStateOf(0.5f) }
@@ -88,6 +84,47 @@ fun SeccionControlesCompletos() {
 
     var switchValue by remember { mutableStateOf(true) }
     Switch(checked = switchValue, onCheckedChange = { switchValue = it })
-
-    Text("FloatingActionButton y TopAppBar están integrados en el Scaffold.")
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SeccionNavegacionYEntrada() {
+    Text("NAVEGACIÓN Y ENTRADA", style = MaterialTheme.typography.headlineSmall)
+
+    Text("• BottomNavigation: Configurado en el Scaffold")
+
+    var showDialog by remember { mutableStateOf(false) }
+    Button(onClick = { showDialog = true }) { Text("Abrir Dialog") }
+    if (showDialog) {
+        AlertDialog(onDismissRequest = { showDialog = false }, title = { Text("Dialog") }, text = { Text("Contenido") }, confirmButton = { TextButton(onClick = { showDialog = false }) { Text("OK") } })
+    }
+
+    HorizontalDivider(thickness = 2.dp, color = Color.Gray)
+
+    var expanded by remember { mutableStateOf(false) }
+    Box {
+        OutlinedButton(onClick = { expanded = true }) { Text("DropdownMenu") }
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            DropdownMenuItem(text = { Text("Opción 1") }, onClick = { expanded = false })
+        }
+    }
+
+    Text("• LazyVerticalGrid: (Ya implementado anteriormente)")
+    Text("• NavigationRail: (Para layouts laterales)")
+
+    var text by remember { mutableStateOf("") }
+    OutlinedTextField(value = text, onValueChange = { text = it }, label = { Text("OutlinedTextField") })
+
+    Text("• Pager: (Configurado con HorizontalPager)")
+
+    Button(onClick = { }) { Text("Disparar SnackBar") }
+
+    var tabIndex by remember { mutableStateOf(0) }
+    TabRow(selectedTabIndex = tabIndex) {
+        Tab(selected = tabIndex == 0, onClick = { tabIndex = 0 }, text = { Text("Tab 1") })
+        Tab(selected = tabIndex == 1, onClick = { tabIndex = 1 }, text = { Text("Tab 2") })
+    }
+
+    Text("• Tooltip: (Usa PlainTooltipBox)")
+}
+
